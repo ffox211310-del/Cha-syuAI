@@ -90,6 +90,24 @@
     };
 
 
+    // ランダムメッセージ一覧
+const randomMessages = [
+
+    "腹減ったな",
+
+    "なんか用か？",
+
+    "暇だなぁ",
+
+    "……。",
+
+    "知らんな",
+
+    "眠い",
+
+    "入力してみろ"
+
+];
     // =========================
     // システム本体
     // =========================
@@ -106,7 +124,11 @@
             answer.textContent = patterns[text];
         }
         else{
-            answer.textContent = "Null";
+           const randomIndex =
+    Math.floor(Math.random() * randomMessages.length);
+
+answer.textContent =
+    randomMessages[randomIndex];
         }
 
     });

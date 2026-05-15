@@ -54,9 +54,7 @@
 <div class="container">
 
     <!-- 解答表示 -->
-    <div id="answer">
-        ここに解答が表示されます
-    </div>
+<div id="answer"></div>
 
     <!-- 入力 -->
     <input
@@ -90,18 +88,16 @@
     };
 
 
-    // ランダムメッセージ一覧
-const randomMessages = [
+    
+
+    // 起動時メッセージ
+const startupMessages = [
 
     "腹減ったな",
 
     "なんか用か？",
 
     "暇だなぁ",
-
-    "……。",
-
-    "知らんな",
 
     "眠い",
 
@@ -119,16 +115,19 @@ const randomMessages = [
 
         const text = input.value.trim();
 
+        // 起動時にランダム表示
+const startupIndex =
+    Math.floor(Math.random() * startupMessages.length);
+
+answer.textContent =
+    startupMessages[startupIndex];
+        
         // パターンに存在するなら表示
         if(patterns[text]){
             answer.textContent = patterns[text];
         }
         else{
-           const randomIndex =
-    Math.floor(Math.random() * randomMessages.length);
-
-answer.textContent =
-    randomMessages[randomIndex];
+         answer.textContent = "Null";
         }
 
     });

@@ -108,6 +108,13 @@ const startupMessages = [
     // システム本体
     // =========================
 
+    // 起動時にランダム表示
+const startupIndex =
+    Math.floor(Math.random() * startupMessages.length);
+
+answer.textContent =
+    startupMessages[startupIndex];
+
     const input = document.getElementById("input");
     const answer = document.getElementById("answer");
 
@@ -115,12 +122,6 @@ const startupMessages = [
 
         const text = input.value.trim();
 
-        // 起動時にランダム表示
-const startupIndex =
-    Math.floor(Math.random() * startupMessages.length);
-
-answer.textContent =
-    startupMessages[startupIndex];
         
         // パターンに存在するなら表示
         if(patterns[text]){

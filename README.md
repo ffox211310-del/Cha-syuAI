@@ -1,1 +1,2 @@
-# Cha-syuTalk
+# Cha-syuAI
+AIが作ったAI。人知を超えた究極の会話体験をお楽しみください()

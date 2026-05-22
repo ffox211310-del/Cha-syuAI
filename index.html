@@ -1,153 +1,131 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Cha-syuTalk</title>
+<title>Cha-syuTalk AI System</title>
 
 <style>
-    body{
-        margin:0;
-        height:100vh;
-        display:flex;
-        justify-content:center;
-        align-items:center;
-        background:black;
-        font-family:sans-serif;
-    }
 
-    .container{
-        width:90%;
-        max-width:500px;
-        display:flex;
-        flex-direction:column;
-        gap:20px;
-    }
+body{
+    background:black;
+    color:lime;
+    font-family:monospace;
+    padding:20px;
+}
 
-    /* 解答欄 */
-    #answer{
-        background:white;
-        color:black;
-        padding:20px;
-        border-radius:12px;
-        min-height:40px;
-        font-size:24px;
-        text-align:center;
-        word-break:break-word;
-    }
+#chat{
+    white-space:pre-wrap;
+    margin-bottom:20px;
+}
 
-    /* 入力欄 */
-    #input{
-        padding:18px;
-        font-size:22px;
-        border:none;
-        border-radius:12px;
-        outline:none;
-        background:#222;
-        color:white;
-    }
+input{
+    width:70%;
+    background:black;
+    color:lime;
+    border:1px solid lime;
+    padding:10px;
+}
+
+button{
+    background:black;
+    color:lime;
+    border:1px solid lime;
+    padding:10px;
+}
+
 </style>
 </head>
 <body>
 
-<div class="container">
+<h2>Cha-syuTalk AI System</h2>
 
-    <!-- 解答表示 -->
-<div id="answer"></div>
-
-    <!-- 入力 -->
-    <input
-        type="text"
-        id="input"
-        placeholder="文字を入力..."
-    />
-
+<div id="chat">
+[ SYSTEM ONLINE ]
+Connecting to neural network...
 </div>
+
+<input id="msg" placeholder="message">
+<button onclick="sendMessage()">SEND</button>
 
 <script>
 
-    // =========================
-    // 会話パターンまとめ
-    // =========================
+const API_KEY = "Null";
 
-    const patterns = {
+const chat =
+document.getElementById("chat");
 
-        "おはよう": "おはようございます",
+async function sendMessage(){
 
-        "こんにちは": "こんにちは！",
+    const input =
+    document.getElementById("msg");
 
-        "こんばんは": "こんばんは！",
+    const text = input.value;
 
-        "ありがとう": "どういたしまして！",
+    if(!text) return;
 
-        "元気?": "お前は大丈夫か",
+    chat.innerHTML += "\n> " + text + "\n";
 
-        "元気だ":"そっすか",
+    input.value = "";
 
-        "Null":"真似すんな"
+    chat.innerHTML +=
+    "[ Generating response... ]\n";
 
-    };
+    const response = await fetch(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
+        method:"POST",
 
+        headers:{
+            "Authorization":
+            "Bearer " + API_KEY,
 
-    
+            "Content-Type":
+            "application/json"
+        },
 
-    // 起動時メッセージ
-const startupMessages = [
+        body:JSON.stringify({
 
-    "腹減ったな",
+            model:
+            "qwen/qwen3-32b",
 
-    "なんか用か？",
+            messages:[
 
-    "暇だなぁ",
+                {
+                    role:"system",
 
-    "眠い",
+                    content:
+                    `
+                    あなたの名前はLuna。
 
-    "入力してみろ"
+                    あなたは
+                    Cha-syuTalk AI System。
 
-];
-    // =========================
-    // システム本体
-    // =========================
-const input = document.getElementById("input");
-const answer = document.getElementById("answer");
+                    SF世界の
+                    管理AIのように話します。
 
+                    簡潔に返答します。
+                    `
+                },
 
-// =========================
-// 最初にランダム表示
-// =========================
+                {
+                    role:"user",
+                    content:text
+                }
+            ]
 
-const startupIndex =
-    Math.floor(Math.random() * startupMessages.length);
+        })
+    });
 
-answer.textContent =
-    startupMessages[startupIndex];
+    const data =
+    await response.json();
 
+    chat.innerHTML +=
+    data.choices[0].message.content
+    + "\n\n";
+}
 
-// =========================
-// 入力時
-// =========================
-
-input.addEventListener("input", () => {
-
-    const text = input.value.trim();
-
-    // パターンに存在するなら表示
-    if(patterns[text]){
-
-        answer.textContent = patterns[text];
-
-    }
-    else{
-
-        answer.textContent = "Null";
-
-    }
-
-});
-
-
-    
 </script>
 
 </body>

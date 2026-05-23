@@ -104,35 +104,46 @@ async function sendMessage(){
 
                 body:JSON.stringify({
 
-                    model:model,
+    model:"openrouter/free",
 
-                    messages:[
+    models:[
 
-                        {
-                            role:"system",
+        "deepseek/deepseek-r1:free",
 
-                            content:
-                            `
-                            あなたの名前はCha-syuAI。
+        "meta-llama/llama-4-maverick:free",
 
-                            好きなものはチャーシュー。
+        "qwen/qwen3-235b-a22b:free",
 
-                            回答は簡素。
+        "qwen/qwen3-32b"
+    ],
 
-                            タメ口で話す。
+    messages:[
 
-                            分からないことは
-                            分からないと言う。
-                            `
-                        },
+        {
+            role:"system",
 
-                        {
-                            role:"user",
-                            content:text
-                        }
-                    ]
+            content:
+            `
+            あなたの名前はCha-syuAI。
 
-                })
+            好きなものはチャーシュー。
+
+            回答は簡素。
+
+            タメ口で話す。
+
+            分からないことは
+            分からないと言う。
+            `
+        },
+
+        {
+            role:"user",
+            content:text
+        }
+    ]
+})
+                
             });
 
             const data =

@@ -56,10 +56,25 @@ Connecting to free neural network
 const chat =
 document.getElementById("chat");
 
-const fallbackModel =
-"qwen/qwen3-32b";
-let overrideMode = false;
-    
+/*
+========================
+CURRENT NEURAL CORE
+========================
+
+定期的にここを書き換えるだけ。
+
+例:
+
+"openai/gpt-oss-120b:free"
+"deepseek/deepseek-r1-0528:free"
+"meta-llama/llama-3.3-70b-instruct:free"
+
+========================
+*/
+
+const currentModel =
+"openai/gpt-oss-120b:free";
+
 async function sendMessage(){
 
     const input =
@@ -67,20 +82,51 @@ async function sendMessage(){
 
     const text =
     input.value.trim();
-    if(text === "/override"){
-
-    overrideMode = true;
-
-    chat.innerHTML +=
-    "\n[ WARNING ACCEPTED ]\n" +
-    "[ Emergency Qwen routing enabled ]\n\n";
-
-    input.value = "";
-
-    return;
-    }
 
     if(!text) return;
+
+    /*
+    ========================
+    SPECIAL COMMANDS
+    ========================
+    */
+
+    if(text === "/status"){
+
+        chat.innerHTML +=
+        "\n[ SYSTEM STATUS ]\n" +
+
+        "Current Neural Core:\n" +
+        currentModel +
+
+        "\n\n";
+
+        input.value = "";
+
+        return;
+    }
+
+    if(text === "/help"){
+
+        chat.innerHTML +=
+        "\n[ COMMAND LIST ]\n" +
+
+        "/status\n" +
+        "Show current model\n\n" +
+
+        "/help\n" +
+        "Show command list\n\n";
+
+        input.value = "";
+
+        return;
+    }
+
+    /*
+    ========================
+    NORMAL CHAT
+    ========================
+    */
 
     chat.innerHTML +=
     "\n> " + text + "\n";
@@ -88,13 +134,11 @@ async function sendMessage(){
     input.value = "";
 
     chat.innerHTML +=
-    "[ Searching free neural core... ]\n";
-
-    let data;
+    "[ Connecting to neural core... ]\n";
 
     try{
 
-        const freeResponse =
+        const response =
         await fetch(
         "/api/chat",
         {
@@ -108,7 +152,7 @@ async function sendMessage(){
             body:JSON.stringify({
 
                 model:
-                "openrouter/free",
+                currentModel,
 
                 messages:[
 
@@ -117,16 +161,23 @@ async function sendMessage(){
 
                         content:
                         `
-                        あなたの名前はCha-syuAI。
+                        あなたの名前は
+                        Cha-syuAI。
 
-                        好きなものはチャーシュー。
+                        SF世界の
+                        管理AIのように話す。
 
-                        回答は簡素。
+                        好きなものは
+                        チャーシュー。
+
+                        回答は簡潔。
 
                         タメ口。
 
                         分からないことは
                         分からないと言う。
+
+                        少し機械的。
                         `
                     },
 
@@ -138,112 +189,36 @@ async function sendMessage(){
             })
         });
 
-        data =
-        await freeResponse.json();
+        const data =
+        await response.json();
 
-        if(
-            freeResponse.ok &&
-            !data.error &&
-            data.choices
-        ){
+        if(data.error){
 
             chat.innerHTML +=
-            "[ Free core connected ]\n";
+            "[ ERROR ]\n" +
 
-        }else{
+            data.error.message +
 
-            throw new Error();
+            "\n\n";
+
+            return;
         }
 
-}catch{
-
-    chat.innerHTML +=
-    "[ Free models unavailable ]\n";
-
-    if(!overrideMode){
+        chat.innerHTML +=
+        "[ Neural link established ]\n\n";
 
         chat.innerHTML +=
-        "[ WARNING ]\n" +
-        "No free model available.\n\n" +
+        data.choices[0].message.content
+        + "\n\n";
 
-        "Type:\n" +
-        "/override\n\n" +
-
-        "to enable emergency Qwen routing.\n\n";
-
-        return;
-    }
-
-    chat.innerHTML +=
-    "[ Emergency Qwen routing... ]\n";
-
-        const paidResponse =
-        await fetch(
-        "/api/chat",
-        {
-            method:"POST",
-
-            headers:{
-                "Content-Type":
-                "application/json"
-            },
-
-            body:JSON.stringify({
-
-                model:
-                fallbackModel,
-
-                messages:[
-
-                    {
-                        role:"system",
-
-                        content:
-                        `
-                        あなたの名前はCha-syuAI。
-
-                        好きなものはチャーシュー。
-
-                        回答は簡素。
-
-                        タメ口。
-
-                        分からないことは
-                        分からないと言う。
-                        `
-                    },
-
-                    {
-                        role:"user",
-                        content:text
-                    }
-                ]
-            })
-        });
-
-        data =
-        await paidResponse.json();
+    }catch(error){
 
         chat.innerHTML +=
-        "[ Qwen emergency link established ]\n";
+        "[ CONNECTION FAILURE ]\n\n";
     }
-
-    if(data.error){
-
-        chat.innerHTML +=
-        "[ ERROR ] "
-        + data.error.message +
-        "\n\n";
-
-        return;
-    }
-
-    chat.innerHTML +=
-    data.choices[0].message.content
-    + "\n\n";
 }
 
 </script>
-
+    
     </body>
 </html>

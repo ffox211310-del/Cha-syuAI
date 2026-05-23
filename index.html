@@ -45,7 +45,7 @@ button{
 
 <div id="chat">
 [ SYSTEM ONLINE ]
-Connecting to neural network
+Connecting to free neural network
 </div>
 
 <input id="msg" placeholder="message">
@@ -155,13 +155,27 @@ async function sendMessage(){
             throw new Error();
         }
 
-    }catch{
+}catch{
+
+    chat.innerHTML +=
+    "[ Free models unavailable ]\n";
+
+    if(!overrideMode){
 
         chat.innerHTML +=
-        "[ Free models unavailable ]\n";
+        "[ WARNING ]\n" +
+        "No free model available.\n\n" +
 
-        chat.innerHTML +=
-        "[ Emergency Qwen routing... ]\n";
+        "Type:\n" +
+        "/override\n\n" +
+
+        "to enable emergency Qwen routing.\n\n";
+
+        return;
+    }
+
+    chat.innerHTML +=
+    "[ Emergency Qwen routing... ]\n";
 
         const paidResponse =
         await fetch(

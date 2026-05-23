@@ -69,7 +69,7 @@ async function sendMessage(){
     if(text === "/deepseek"){
 
     currentModel =
-    "deepseek/deepseek-chat-v3:free";
+    "deepseek/deepseek-chat:free";
 
     chat.innerHTML +=
     "\n[ Switching neural core... ]\n" +
@@ -83,7 +83,7 @@ async function sendMessage(){
 if(text === "/llama"){
 
     currentModel =
-    "meta-llama/llama-4-maverick:free";
+    "meta-llama/llama-3.3-8b-instruct:free";
 
     chat.innerHTML +=
     "\n[ Switching neural core... ]\n" +
@@ -139,8 +139,6 @@ if(text === "/qwen"){
                     content:
                     `
                     あなたの名前はCha-syuAI。
-
-                    Qwenによって動作してる。
                     
                     好きなものはチャーシュー。
 

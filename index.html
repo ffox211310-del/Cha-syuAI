@@ -58,7 +58,8 @@ document.getElementById("chat");
 
 const fallbackModel =
 "qwen/qwen3-32b";
-
+let overrideMode = false;
+    
 async function sendMessage(){
 
     const input =
@@ -66,6 +67,18 @@ async function sendMessage(){
 
     const text =
     input.value.trim();
+    if(text === "/override"){
+
+    overrideMode = true;
+
+    chat.innerHTML +=
+    "\n[ WARNING ACCEPTED ]\n" +
+    "[ Emergency Qwen routing enabled ]\n\n";
+
+    input.value = "";
+
+    return;
+    }
 
     if(!text) return;
 

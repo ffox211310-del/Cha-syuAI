@@ -69,7 +69,7 @@ async function sendMessage(){
     if(text === "/deepseek"){
 
     currentModel =
-    "deepseek/deepseek-chat:free";
+    "deepseek/deepseek-r1-0528:free";
 
     chat.innerHTML +=
     "\n[ Switching neural core... ]\n" +
@@ -83,7 +83,7 @@ async function sendMessage(){
 if(text === "/llama"){
 
     currentModel =
-    "meta-llama/llama-3.3-8b-instruct:free";
+    "meta-llama/llama-3.3-70b-instruct:free";
 
     chat.innerHTML +=
     "\n[ Switching neural core... ]\n" +
@@ -162,6 +162,14 @@ if(text === "/qwen"){
         })
     });
 
+    if(!response.ok){
+
+    chat.innerHTML +=
+    "[ CONNECTION ERROR ]\n\n";
+
+    return;
+    }
+    
     const data =
     await response.json();
 

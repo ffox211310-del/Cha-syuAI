@@ -118,6 +118,15 @@ if(text === "/qwen"){
     "[ Generating response... ]\n";
 
     const response = await fetch(
+        
+        if(!response.ok){
+
+    chat.innerHTML +=
+    "[ ERROR ]\n";
+
+    return;
+    }
+    
     "/api/chat",
     {
         method:"POST",

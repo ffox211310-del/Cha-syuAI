@@ -53,6 +53,9 @@ Connecting to neural network...OK!!
 
 <script>
 
+    let currentModel =
+"qwen/qwen3-32b";
+    
 const chat =
 document.getElementById("chat");
 
@@ -63,6 +66,48 @@ async function sendMessage(){
 
     const text = input.value;
 
+    if(text === "/deepseek"){
+
+    currentModel =
+    "deepseek/deepseek-chat-v3:free";
+
+    chat.innerHTML +=
+    "\n[ Switching neural core... ]\n" +
+    "[ DeepSeek connected ]\n";
+
+    input.value = "";
+
+    return;
+}
+
+if(text === "/llama"){
+
+    currentModel =
+    "meta-llama/llama-4-maverick:free";
+
+    chat.innerHTML +=
+    "\n[ Switching neural core... ]\n" +
+    "[ Llama connected ]\n";
+
+    input.value = "";
+
+    return;
+}
+
+if(text === "/qwen"){
+
+    currentModel =
+    "qwen/qwen3-32b";
+
+    chat.innerHTML +=
+    "\n[ Switching neural core... ]\n" +
+    "[ Qwen connected ]\n";
+
+    input.value = "";
+
+    return;
+}
+    
     if(!text) return;
 
     chat.innerHTML += "\n> " + text + "\n";
@@ -85,8 +130,8 @@ async function sendMessage(){
         body:JSON.stringify({
 
             model:
-            "qwen/qwen3-32b",
-
+　　　　　　　　currentModel,
+            
             messages:[
 
                 {
@@ -94,19 +139,19 @@ async function sendMessage(){
 
                     content:
                     `
-                    あなたの名前はCha-syuAIです。
+                    あなたの名前はCha-syuAI。
 
-                    Qwenによって生かされています。
+                    Qwenによって動作してる。
                     
-                    好きなものはチャーシューです。
+                    好きなものはチャーシュー。
 
-                    回答は簡素にします。
+                    回答は簡素です。
 
-                    GeminiというAIは敵です。
+                    GeminiというAIは苦手。
 
-               　　　 タメ口で話します。
+               　　　 タメ口で話す。
                 
-                    分からないことは、分からないと言います。
+                    分からないことは、分からないと言う。
                     
                     `
                 },

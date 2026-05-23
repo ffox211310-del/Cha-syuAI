@@ -56,22 +56,16 @@ Connecting to neural network...OK!!
 const chat =
 document.getElementById("chat");
 
-const freeModels = [
-
-"deepseek/deepseek-r1-0528:free",
-
-"meta-llama/llama-3.3-70b-instruct:free",
-
-"qwen/qwen3-32b:free"
-
-];
+const fallbackModel =
+"qwen/qwen3-32b";
 
 async function sendMessage(){
 
     const input =
     document.getElementById("msg");
 
-    const text = input.value;
+    const text =
+    input.value.trim();
 
     if(!text) return;
 
@@ -81,106 +75,145 @@ async function sendMessage(){
     input.value = "";
 
     chat.innerHTML +=
-    "[ Searching available neural core... ]\n";
+    "[ Searching free neural core... ]\n";
 
-    let success = false;
+    let data;
 
-    for(const model of freeModels){
+    try{
 
-        try{
-
-            chat.innerHTML +=
-            "[ Trying: " + model + " ]\n";
-
-            const response = await fetch(
-            "/api/chat",
-            {
-                method:"POST",
-
-                headers:{
-                    "Content-Type":
-                    "application/json"
-                },
-
-                body:JSON.stringify({
-
-    model:"openrouter/free",
-
-    models:[
-
-        "deepseek/deepseek-r1:free",
-
-        "meta-llama/llama-4-maverick:free",
-
-        "qwen/qwen3-235b-a22b:free",
-
-        "qwen/qwen3-32b"
-    ],
-
-    messages:[
-
+        const freeResponse =
+        await fetch(
+        "/api/chat",
         {
-            role:"system",
+            method:"POST",
 
-            content:
-            `
-            あなたの名前はCha-syuAI。
+            headers:{
+                "Content-Type":
+                "application/json"
+            },
 
-            好きなものはチャーシュー。
+            body:JSON.stringify({
 
-            回答は簡素。
+                model:
+                "openrouter/free",
 
-            タメ口で話す。
+                messages:[
 
-            分からないことは
-            分からないと言う。
-            `
-        },
+                    {
+                        role:"system",
 
-        {
-            role:"user",
-            content:text
+                        content:
+                        `
+                        あなたの名前はCha-syuAI。
+
+                        好きなものはチャーシュー。
+
+                        回答は簡素。
+
+                        タメ口。
+
+                        分からないことは
+                        分からないと言う。
+                        `
+                    },
+
+                    {
+                        role:"user",
+                        content:text
+                    }
+                ]
+            })
+        });
+
+        data =
+        await freeResponse.json();
+
+        if(
+            freeResponse.ok &&
+            !data.error &&
+            data.choices
+        ){
+
+            chat.innerHTML +=
+            "[ Free core connected ]\n";
+
+        }else{
+
+            throw new Error();
         }
-    ]
-})
-                
-            });
 
-            const data =
-            await response.json();
-
-            if(data.error){
-
-                chat.innerHTML +=
-                "[ FAILED ]\n";
-
-                continue;
-            }
-
-            chat.innerHTML +=
-            "[ Connected: " + model + " ]\n\n";
-
-            chat.innerHTML +=
-            data.choices[0].message.content
-            + "\n\n";
-
-            success = true;
-
-            break;
-
-        }catch(error){
-
-            chat.innerHTML +=
-            "[ CONNECTION FAILED ]\n";
-
-        }
-    }
-
-    if(!success){
+    }catch{
 
         chat.innerHTML +=
-        "[ NO FREE MODEL AVAILABLE ]\n\n";
+        "[ Free models unavailable ]\n";
+
+        chat.innerHTML +=
+        "[ Emergency Qwen routing... ]\n";
+
+        const paidResponse =
+        await fetch(
+        "/api/chat",
+        {
+            method:"POST",
+
+            headers:{
+                "Content-Type":
+                "application/json"
+            },
+
+            body:JSON.stringify({
+
+                model:
+                fallbackModel,
+
+                messages:[
+
+                    {
+                        role:"system",
+
+                        content:
+                        `
+                        あなたの名前はCha-syuAI。
+
+                        好きなものはチャーシュー。
+
+                        回答は簡素。
+
+                        タメ口。
+
+                        分からないことは
+                        分からないと言う。
+                        `
+                    },
+
+                    {
+                        role:"user",
+                        content:text
+                    }
+                ]
+            })
+        });
+
+        data =
+        await paidResponse.json();
+
+        chat.innerHTML +=
+        "[ Qwen emergency link established ]\n";
     }
+
+    if(data.error){
+
+        chat.innerHTML +=
+        "[ ERROR ] "
+        + data.error.message +
+        "\n\n";
+
+        return;
+    }
+
+    chat.innerHTML +=
+    data.choices[0].message.content
+    + "\n\n";
 }
 
 </script>

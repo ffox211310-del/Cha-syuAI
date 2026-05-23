@@ -53,11 +53,18 @@ Connecting to neural network...OK!!
 
 <script>
 
-    let currentModel =
-"qwen/qwen3-32b";
-    
 const chat =
 document.getElementById("chat");
+
+const freeModels = [
+
+"deepseek/deepseek-r1-0528:free",
+
+"meta-llama/llama-3.3-70b-instruct:free",
+
+"qwen/qwen3-32b:free"
+
+];
 
 async function sendMessage(){
 
@@ -66,119 +73,106 @@ async function sendMessage(){
 
     const text = input.value;
 
-    if(text === "/deepseek"){
-
-    currentModel =
-    "deepseek/deepseek-r1-0528:free";
-
-    chat.innerHTML +=
-    "\n[ Switching neural core... ]\n" +
-    "[ DeepSeek connected ]\n";
-
-    input.value = "";
-
-    return;
-}
-
-if(text === "/llama"){
-
-    currentModel =
-    "meta-llama/llama-3.3-70b-instruct:free";
-
-    chat.innerHTML +=
-    "\n[ Switching neural core... ]\n" +
-    "[ Llama connected ]\n";
-
-    input.value = "";
-
-    return;
-}
-
-if(text === "/qwen"){
-
-    currentModel =
-    "qwen/qwen3-32b";
-
-    chat.innerHTML +=
-    "\n[ Switching neural core... ]\n" +
-    "[ Qwen connected ]\n";
-
-    input.value = "";
-
-    return;
-}
-    
     if(!text) return;
 
-    chat.innerHTML += "\n> " + text + "\n";
+    chat.innerHTML +=
+    "\n> " + text + "\n";
 
     input.value = "";
 
     chat.innerHTML +=
-    "[ Generating response... ]\n";
+    "[ Searching available neural core... ]\n";
 
-    const response = await fetch(
-    "/api/chat",
-    {
-        method:"POST",
+    let success = false;
 
-        headers:{
-            "Content-Type":
-            "application/json"
-        },
+    for(const model of freeModels){
 
-        body:JSON.stringify({
+        try{
 
-            model:currentModel,
-            
-            messages:[
+            chat.innerHTML +=
+            "[ Trying: " + model + " ]\n";
 
-                {
-                    role:"system",
+            const response = await fetch(
+            "/api/chat",
+            {
+                method:"POST",
 
-                    content:
-                    `
-                    あなたの名前はCha-syuAI。
-                    
-                    好きなものはチャーシュー。
-
-                    回答は簡素です。
-
-                    GeminiというAIは苦手。
-
-               　　　 タメ口で話す。
-                
-                    分からないことは、分からないと言う。
-                    
-                    `
+                headers:{
+                    "Content-Type":
+                    "application/json"
                 },
 
-                {
-                    role:"user",
-                    content:text
-                }
-            ]
+                body:JSON.stringify({
 
-        })
-    });
+                    model:model,
 
-    if(!response.ok){
+                    messages:[
 
-    chat.innerHTML +=
-    "[ CONNECTION ERROR ]\n\n";
+                        {
+                            role:"system",
 
-    return;
+                            content:
+                            `
+                            あなたの名前はCha-syuAI。
+
+                            好きなものはチャーシュー。
+
+                            回答は簡素。
+
+                            タメ口で話す。
+
+                            分からないことは
+                            分からないと言う。
+                            `
+                        },
+
+                        {
+                            role:"user",
+                            content:text
+                        }
+                    ]
+
+                })
+            });
+
+            const data =
+            await response.json();
+
+            if(data.error){
+
+                chat.innerHTML +=
+                "[ FAILED ]\n";
+
+                continue;
+            }
+
+            chat.innerHTML +=
+            "[ Connected: " + model + " ]\n\n";
+
+            chat.innerHTML +=
+            data.choices[0].message.content
+            + "\n\n";
+
+            success = true;
+
+            break;
+
+        }catch(error){
+
+            chat.innerHTML +=
+            "[ CONNECTION FAILED ]\n";
+
+        }
     }
-    
-    const data =
-    await response.json();
 
-    chat.innerHTML +=
-    data.choices[0].message.content
-    + "\n\n";
+    if(!success){
+
+        chat.innerHTML +=
+        "[ NO FREE MODEL AVAILABLE ]\n\n";
+    }
 }
 
 </script>
 
-</body>
+    </body>
 </html>

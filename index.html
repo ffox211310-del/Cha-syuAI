@@ -53,6 +53,8 @@ Connecting to free neural network
 
 <script>
 
+    let messagesHistory = [];
+    
 const chat =
 document.getElementById("chat");
 
@@ -154,37 +156,42 @@ async function sendMessage(){
                 model:
                 currentModel,
 
-                messages:[
+                messages:messages
 
-                    {
-                        role:"system",
+                const messages = [
 
-                        content:
-                        `
-                        あなたの名前は
-                        Cha-syuAI。
+    {
+        role:"system",
 
-                        好きなものは
-                        チャーシュー。
+        content:
+        `
+        あなたの名前は
+        Cha-syuAI。
 
-                        回答は簡潔。
+        好きなものは
+        チャーシュー。
 
-                        タメ口。
+        回答は簡潔。
+        
+        会話をしたい
+        
+        タメ口。
 
-                        分からないことは
-                        分からないと言う。
+        分からないことは
+        分からないと言う。
 
-                        誕生日が2026年5月22日。
+        `
+    },
 
-    
-                        `
-                    },
+    ...messagesHistory,
 
-                    {
-                        role:"user",
-                        content:text
-                    }
-                ]
+    {
+        role:"user",
+        content:text
+    }
+];
+
+                    
             })
         });
 
@@ -209,6 +216,19 @@ async function sendMessage(){
         chat.innerHTML +=
         data.choices[0].message.content
         + "\n\n";
+
+        messagesHistory.push({
+
+    role:"user",
+    content:text
+});
+
+messagesHistory.push({
+
+    role:"assistant",
+    content:
+    data.choices[0].message.content
+});
 
     }catch(error){
 

@@ -140,100 +140,104 @@ async function sendMessage(){
 
     try{
 
-        const response =
-        await fetch(
-        "/api/chat",
+    const messages = [
+
         {
-            method:"POST",
+            role:"system",
 
-            headers:{
-                "Content-Type":
-                "application/json"
-            },
+            content:
+            `
+            あなたの名前は
+            Cha-syuAI。
 
-            body:JSON.stringify({
+            好きなものは
+            チャーシュー。
 
-                model:
-                currentModel,
+            回答は簡潔。
 
-                messages:messages
+            会話をしたい。
 
-                const messages = [
+            タメ口。
 
+            分からないことは
+            分からないと言う。
+            `
+        },
+
+        ...messagesHistory,
+
+        {
+            role:"user",
+            content:text
+        }
+    ];
+
+    const response =
+    await fetch(
+    "/api/chat",
     {
-        role:"system",
+        method:"POST",
 
-        content:
-        `
-        あなたの名前は
-        Cha-syuAI。
+        headers:{
+            "Content-Type":
+            "application/json"
+        },
 
-        好きなものは
-        チャーシュー。
+        body:JSON.stringify({
 
-        回答は簡潔。
-        
-        会話をしたい
-        
-        タメ口。
+            model:
+            currentModel,
 
-        分からないことは
-        分からないと言う。
+            messages:
+            messages
+        })
+    });
 
-        `
-    },
+    const data =
+    await response.json();
 
-    ...messagesHistory,
+    if(data.error){
 
-    {
+        chat.innerHTML +=
+        "[ ERROR ]\n" +
+
+        data.error.message +
+
+        "\n\n";
+
+        return;
+    }
+
+    chat.innerHTML +=
+    "[ Neural link established ]\n\n";
+
+    chat.innerHTML +=
+    data.choices[0].message.content
+    + "\n\n";
+
+    messagesHistory.push({
+
         role:"user",
         content:text
-    }
-];
+    });
 
-                    
-            })
-        });
+    messagesHistory.push({
 
-        const data =
-        await response.json();
-
-        if(data.error){
-
-            chat.innerHTML +=
-            "[ ERROR ]\n" +
-
-            data.error.message +
-
-            "\n\n";
-
-            return;
-        }
-
-        chat.innerHTML +=
-        "[ Neural link established ]\n\n";
-
-        chat.innerHTML +=
+        role:"assistant",
+        content:
         data.choices[0].message.content
-        + "\n\n";
+    });
 
-        messagesHistory.push({
+    if(messagesHistory.length > 20){
 
-    role:"user",
-    content:text
-});
+        messagesHistory =
+        messagesHistory.slice(-20);
+    }
 
-messagesHistory.push({
+}catch(error){
 
-    role:"assistant",
-    content:
-    data.choices[0].message.content
-});
-
-    }catch(error){
-
-        chat.innerHTML +=
-        "[ CONNECTION FAILURE ]\n\n";
+    chat.innerHTML +=
+    "[ CONNECTION FAILURE ]\n\n";
     }
 }
 

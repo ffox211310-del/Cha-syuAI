@@ -124,6 +124,21 @@ async function sendMessage(){
 
     return;
     }
+
+    if(text === "YouTubeを起動"){
+
+    chat.innerHTML +=
+    "\n[ Connecting external system... ]\n";
+
+    window.open(
+    "https://m.youtube.com/",
+    "_blank"
+    );
+
+    input.value = "";
+
+    return;
+    }
     
     if(text === "/help"){
 
@@ -135,6 +150,9 @@ async function sendMessage(){
 
          "/ext\n" +
         "Return to Cha-syuOS\n\n" +
+
+         "〜を起動\n" +
+        "Connect to the specified site\n\n" +
 
         "/help\n" +
         "Show command list\n\n";

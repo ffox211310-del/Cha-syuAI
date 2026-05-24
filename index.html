@@ -110,6 +110,21 @@ async function sendMessage(){
         return;
     }
 
+    if(text === "/ext"){
+
+    chat.innerHTML +=
+    "\n[ Connecting external system... ]\n";
+
+    window.open(
+    "https://ffox211310-del.github.io/Cha-syuOS/",
+    "_blank"
+    );
+
+    input.value = "";
+
+    return;
+    }
+    
     if(text === "/help"){
 
         chat.innerHTML +=
